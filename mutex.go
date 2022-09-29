@@ -8,20 +8,20 @@ var (
 	lc sync.Mutex
 )
 
-type MutexLock struct {
+type mutexLock struct {
 }
 
-func NewMutexLock() *MutexLock {
+func NewMutexLock() *mutexLock {
 
-	return &MutexLock{}
+	return &mutexLock{}
 }
 
-func (m *MutexLock) Lock() bool {
+func (m *mutexLock) Lock() bool {
 	lc.Lock()
 	return true
 }
 
-func (m *MutexLock) Unlock() bool {
+func (m *mutexLock) Unlock() bool {
 	lc.Unlock()
 	return true
 }

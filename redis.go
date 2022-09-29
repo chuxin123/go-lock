@@ -1,9 +1,10 @@
 package lock
 
 import (
-	"github.com/go-redis/redis"
 	"math/rand"
 	"time"
+
+	"github.com/go-redis/redis"
 )
 
 const (
@@ -17,7 +18,7 @@ end
 `
 )
 
-type RedisLock struct {
+type redisLock struct {
 }
 
 var (
@@ -33,11 +34,11 @@ func init() {
 	})
 }
 
-func NewRedisLock() *RedisLock {
-	return &RedisLock{}
+func NewRedisLock() *redisLock {
+	return &redisLock{}
 }
 
-func (r *RedisLock) Lock() bool {
+func (r *redisLock) Lock() bool {
 
 	uniqueId := rand.Int() // 假定为owner进程
 	resp := redisClient.SetNX(redisLockKey, uniqueId, 10*time.Second)
@@ -49,7 +50,7 @@ func (r *RedisLock) Lock() bool {
 }
 
 // 需要验证owner
-func (r *RedisLock) Unlock() bool {
+func (r *redisLock) Unlock() bool {
 	resp := redisClient.Eval(script, []string{redisLockKey})
 	unlockSuccess, err := resp.Result()
 	v, ok := unlockSuccess.(bool)

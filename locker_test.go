@@ -79,4 +79,5 @@ func TestEtcdLock(t *testing.T) {
 			}
 		}()
 	}
+	wg.Wait()
 }

@@ -1,23 +1,23 @@
 package lock
 
-var locker = make(chan struct{}, 1)
+var (
+	locker = make(chan struct{}, 1)
+)
 
-type ChanLock struct {
+type chanLock struct {
 }
 
-func NewChanLock() *ChanLock {
+func NewChanLock() *chanLock {
 	locker <- struct{}{}
-	return &ChanLock{}
+	return &chanLock{}
 }
 
-func (c *ChanLock) Lock() bool {
-	select {
-	case <-locker:
-		return true
-	}
+func (c *chanLock) Lock() bool {
+	<-locker
+	return true
 }
 
-func (c *ChanLock) Unlock() bool {
+func (c *chanLock) Unlock() bool {
 	locker <- struct{}{}
 	return true
 }
