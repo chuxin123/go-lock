@@ -40,7 +40,7 @@ func NewRedisLock() *redisLock {
 
 func (r *redisLock) lock() bool {
 
-	uniqueId := rand.Int() // 假定为owner进程
+	uniqueId := rand.Int() // 设定owner
 	resp := redisClient.SetNX(redisLockKey, uniqueId, 10*time.Second)
 	lockSuccess, err := resp.Result()
 	if err != nil || !lockSuccess {
@@ -49,7 +49,7 @@ func (r *redisLock) lock() bool {
 	return true
 }
 
-// 需要验证owner
+// 正式使用需要验证owner
 func (r *redisLock) unlock() bool {
 	resp := redisClient.Eval(script, []string{redisLockKey})
 	unlockSuccess, err := resp.Result()
