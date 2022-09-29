@@ -15,8 +15,7 @@ var (
 )
 
 type etcdLock struct {
-	etcd *clientv3.Client
-	mu   *concurrency.Mutex
+	mu *concurrency.Mutex
 }
 
 func init() {
@@ -39,8 +38,7 @@ func NewEtcdLock() *etcdLock {
 	}
 	mutex := concurrency.NewMutex(session, etcdLockKey)
 	return &etcdLock{
-		etcd: etcdClient,
-		mu:   mutex,
+		mu: mutex,
 	}
 }
 
