@@ -1,16 +1,12 @@
 package lock
 
-type Factory interface {
-	CreateLock(handler string) Locker
-}
-
 var (
 	client = new(clientLocker)
 )
 
 type Locker interface {
-	Lock() bool
-	Unlock() bool
+	lock() bool
+	unlock() bool
 }
 
 type clientLocker struct {
@@ -25,8 +21,9 @@ func (c *clientLocker) load() Locker {
 	return c.locker
 }
 
-func SetLock(l Locker) {
+func SetLock(l Locker) Locker {
 	client.store(l)
+	return l
 }
 
 func GetLock() Locker {
@@ -34,9 +31,9 @@ func GetLock() Locker {
 }
 
 func Lock() bool {
-	return GetLock().Lock()
+	return GetLock().lock()
 }
 
 func Unlock() bool {
-	return GetLock().Unlock()
+	return GetLock().unlock()
 }

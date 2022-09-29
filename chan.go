@@ -12,12 +12,12 @@ func NewChanLock() *chanLock {
 	return &chanLock{}
 }
 
-func (c *chanLock) Lock() bool {
+func (c *chanLock) lock() bool {
 	<-locker
 	return true
 }
 
-func (c *chanLock) Unlock() bool {
+func (c *chanLock) unlock() bool {
 	locker <- struct{}{}
 	return true
 }

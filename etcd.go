@@ -3,7 +3,6 @@ package lock
 import (
 	"context"
 	"fmt"
-	"sync"
 	"time"
 
 	clientv3 "go.etcd.io/etcd/client/v3"
@@ -13,7 +12,6 @@ import (
 var (
 	etcdClient  *clientv3.Client
 	etcdLockKey = "/etcd-lock-key"
-	s           sync.Once
 )
 
 type etcdLock struct {
@@ -21,9 +19,9 @@ type etcdLock struct {
 	mu   *concurrency.Mutex
 }
 
-func NewEtcdLock() *etcdLock {
-
-	etcdClient, err := clientv3.New(clientv3.Config{
+func init() {
+	var err error
+	etcdClient, err = clientv3.New(clientv3.Config{
 		Endpoints:   []string{"http://127.0.0.1:2379"},
 		DialTimeout: 2 * time.Second,
 	})
@@ -31,6 +29,9 @@ func NewEtcdLock() *etcdLock {
 	if etcdClient == nil || err != nil {
 		fmt.Printf("clientv3.New failed")
 	}
+}
+
+func NewEtcdLock() *etcdLock {
 
 	session, err := concurrency.NewSession(etcdClient)
 	if err != nil {
@@ -43,12 +44,12 @@ func NewEtcdLock() *etcdLock {
 	}
 }
 
-func (e *etcdLock) Lock() bool {
+func (e *etcdLock) lock() bool {
 	err := e.mu.Lock(context.TODO())
 	return err == nil
 }
 
-func (e *etcdLock) Unlock() bool {
+func (e *etcdLock) unlock() bool {
 	err := e.mu.Unlock(context.TODO())
 	return err == nil
 }

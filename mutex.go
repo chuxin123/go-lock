@@ -16,12 +16,12 @@ func NewMutexLock() *mutexLock {
 	return &mutexLock{}
 }
 
-func (m *mutexLock) Lock() bool {
+func (m *mutexLock) lock() bool {
 	lc.Lock()
 	return true
 }
 
-func (m *mutexLock) Unlock() bool {
+func (m *mutexLock) unlock() bool {
 	lc.Unlock()
 	return true
 }
