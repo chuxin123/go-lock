@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	counter = 0
-	wg      = sync.WaitGroup{}
+	counter int64 = 0
+	wg            = sync.WaitGroup{}
 )
 
 func TestMutexLock(t *testing.T) {
@@ -36,6 +36,7 @@ func TestMutexLock(t *testing.T) {
 }
 
 func TestChanLock(t *testing.T) {
+	counter = 0
 	locker := NewChanLock()
 	SetLock(locker)
 	for i := 0; i < 1000; i++ {
@@ -48,7 +49,7 @@ func TestChanLock(t *testing.T) {
 		}()
 	}
 	wg.Wait()
-	if counter != 2000 {
+	if counter != 1000 {
 		t.Fatal("ChanLock invalid")
 	} else {
 		t.Log("ChanLock test success")
@@ -113,4 +114,25 @@ func TestEtcdLock(t *testing.T) {
 
 	wg.Wait()
 	t.Log("Etcdlock Test success")
+}
+
+func TestAtomicLock(t *testing.T) {
+	counter = 0
+	locker := NewAtomicLock()
+	SetLock(locker)
+	for i := 0; i < 1000; i++ {
+		wg.Add(1)
+		go func() {
+			Lock()
+			counter++
+			Unlock()
+			defer wg.Done()
+		}()
+	}
+	wg.Wait()
+	if counter != 1000 {
+		t.Fatal("AutomicLock invalid")
+	} else {
+		t.Log("AutomicLock test success")
+	}
 }
